@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8d90d5cd-9013-4cd0-b051-b9eb8af81c68" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="dc9d8296-97d8-4b18-b701-548893aa1cb9">
+		<http:request-connection host="worldtimeapi.org" />
+	</http:request-config>
+	<flow name="ci-cd-demo-apiFlow" doc:id="b5e7939e-4796-48a7-875c-87f51de68fee" doc:description="http://localhost:8081/worldtime/America/Toronto
+
+
+http://worldtimeapi.org/api/timezone/America/Toronto
+Other
+http://worldtimeapi.org/api/ip/:ipv4">
+		<http:listener doc:name="Listener" doc:id="1a65dc38-91e3-4700-81fe-c5ff4315b41a" config-ref="HTTP_Listener_config" path="/worldtime/{region}/{city}"/>
+		<http:request method="GET" doc:name="worldtime" doc:id="4be75b3a-aeac-4454-910f-db3e3ea8359a" config-ref="HTTP_Request_configuration" path="/api/timezone/{region}/{city}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	city : attributes.uriParams.city,
+	region : attributes.uriParams.region
+}]]]></http:uri-params>
+		</http:request>
+	</flow>
+</mule>
